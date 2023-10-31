@@ -1,0 +1,14 @@
+[Unit]
+Description=This service is designed to run a downloaded web server written in java
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+ExecStart=java -jar /opt/sample/service.jar
+User=GoodArt
+Restart=always
+RestartSec=10
+Environment=PORT=8888
+
+[Install]
+WantedBy=multi-user.target
