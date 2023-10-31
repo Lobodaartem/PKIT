@@ -1,0 +1,61 @@
+#!/bin/bash
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 {new <name> <email> | list | remove <name> | clear | lookup <name>}"
+    exit 1
+fi
+
+addressbook_file="addressbook.txt"
+
+if [ ! -e "$addressbook_file" ]; then
+    touch "$addressbook_file"
+fi
+
+case "$1" in
+    "new")
+        if [ "$#" -ne 3 ]; then
+            echo "Usage: $0 new <name> <email>"
+            exit 1
+        fi
+        name="$2"
+        email="$3"
+        echo "$name $email" >> "$addressbook_file"
+        echo "Запис додано до адресної книги: $name $email"
+        ;;
+    "list")
+        if [ ! -s "$addressbook_file" ]; then
+            echo "Адресна книга порожня"
+        else
+            cat "$addressbook_file"
+        fi
+        ;;
+    "remove")
+        if [ "$#" -ne 2 ]; then
+            echo "Usage: $0 remove <name>"
+            exit 1
+        fi
+        name="$2"
+        grep -v "^$name " "$addressbook_file" > "$addressbook_file.tmp"
+        mv "$addressbook_file.tmp" "$addressbook_file"
+        echo "Всі записи з іменем $name видалено з адресної книги"
+        ;;
+    "clear")
+        > "$addressbook_file"
+        echo "Адресна книга очищена"
+        ;;
+    "lookup")
+        if [ "$#" -ne 2 ]; then
+            echo "Usage: $0 lookup <name>"
+            exit 1
+        fi
+        name="$2"
+        grep "^$name " "$addressbook_file" | awk '{print}'
+        ;;
+    *)
+        echo "Невідома команда: $1"
+        echo "Usage: $0 {new <name> <email> | list | remove <name> | clear | lookup <name>}"
+        exit 1
+        ;;
+esac
+
+exit 0
